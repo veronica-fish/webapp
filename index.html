@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>狂野西部 - MetaOne</title>
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts (Inter) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --tg-bg: var(--tg-theme-bg-color, #0f172a);
+            --tg-card: var(--tg-theme-secondary-bg-color, #1e293b);
+            --tg-text: var(--tg-theme-text-color, #f8fafc);
+            --tg-hint: var(--tg-theme-hint-color, #94a3b8);
+            --tg-btn: var(--tg-theme-button-color, #3b82f6);
+            --tg-btn-text: var(--tg-theme-button-text-color, #ffffff);
+        }
+        body {
+            background-color: var(--tg-bg);
+            color: var(--tg-text);
+            font-family: 'Inter', -apple-system, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .glass-card {
+            background: var(--tg-card);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary {
+            background: var(--tg-btn);
+            color: var(--tg-btn-text);
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        .btn-primary:active {
+            transform: scale(0.97);
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+        }
+        .tab-active {
+            background: var(--tg-card);
+            color: var(--tg-text);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            font-weight: 600;
+        }
+        .tab-inactive {
+            color: var(--tg-hint);
+            font-weight: 500;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-15px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .animate-live {
+            animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        ::-webkit-scrollbar { display: none; }
+        
+        .svg-icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            display: inline-block;
+            vertical-align: middle;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+    </style>
+</head>
+<body class="p-4 pb-24 min-h-screen">
+
+    <!-- Container Utama -->
+    <div class="max-w-md mx-auto space-y-5">
+
+        <!-- 1. HEADER: Profil Toko & Saldo -->
+        <div class="glass-card rounded-2xl p-5 flex justify-between items-center relative overflow-hidden">
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-green-500/10 rounded-full blur-2xl"></div>
+            
+            <div class="flex items-center space-x-3 z-10">
+                <div class="w-11 h-11 rounded-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center border border-gray-600 shadow-inner text-blue-400">
+                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <path d="M16 10a4 4 0 0 1-8 0"></path>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-[10px] text-gray-400 font-medium tracking-wider uppercase mb-0.5">官方商店</p>
+                    <p class="text-sm font-bold text-white leading-tight">狂野西部 - MetaOne</p>
+                </div>
+            </div>
+            
+            <div class="text-right z-10">
+                <p class="text-[11px] text-gray-400 font-medium tracking-wider uppercase mb-0.5">余额</p>
+                <!-- SALDO DIUBAH MENJADI $0.00 -->
+                <p class="text-2xl font-bold text-green-400 tracking-tight" id="balance">$0.00</p>
+                <p class="text-[10px] text-green-500/70 font-semibold">USDT</p>
+            </div>
+        </div>
+
+        <!-- 2. NAVIGASI TAB -->
+        <div class="bg-black/20 p-1.5 rounded-xl flex space-x-1 border border-white/5">
+            <button id="btn-live" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm transition-all duration-300 tab-active" onclick="showTab('live')">
+                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                实时动态
+            </button>
+            <button id="btn-topup" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm transition-all duration-300 tab-inactive" onclick="showTab('topup')">
+                <svg class="svg-icon" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                充值
+            </button>
+        </div>
+
+        <!-- 3. KONTEN: LIVE TRANSAKSI -->
+        <div id="tab-live" class="space-y-3">
+            <div class="flex items-center justify-between px-1 mb-2">
+                <h2 class="text-sm font-semibold text-gray-300">最近购买记录 (实时)</h2>
+                <span class="flex items-center text-xs text-green-400 font-medium">
+                    <span class="relative flex h-2 w-2 mr-2">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                    </span>
+                    在线
+                </span>
+            </div>
+            
+            <div id="live-list" class="space-y-3.5">
+                <!-- Data live akan muncul di sini -->
+            </div>
+        </div>
+
+        <!-- 4. KONTEN: TOPUP -->
+        <div id="tab-topup" class="hidden space-y-4 animate-live">
+            <div class="glass-card rounded-2xl p-6 text-center relative overflow-hidden">
+                <div class="w-16 h-16 mx-auto bg-blue-500/10 rounded-full flex items-center justify-center mb-4 border border-blue-500/20 text-blue-400">
+                    <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                </div>
+                
+                <h2 class="text-lg font-bold text-white mb-1">充值 USDT</h2>
+                <p class="text-xs text-gray-400 mb-6">为您的账户余额充值</p>
+                
+                <div class="bg-black/20 rounded-xl p-4 mb-6 border border-white/5 flex justify-between items-center">
+                    <div class="text-left">
+                        <p class="text-[10px] text-gray-400 uppercase tracking-wider">最低充值</p>
+                        <p class="text-lg font-bold text-white">$10.00</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[10px] text-gray-400 uppercase tracking-wider">网络</p>
+                        <div class="flex space-x-1 mt-1">
+                            <span class="bg-gray-700 text-gray-300 text-[10px] px-2 py-0.5 rounded">TRC20</span>
+                            <span class="bg-gray-700 text-gray-300 text-[10px] px-2 py-0.5 rounded">BEP20</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn-primary w-full py-3.5 rounded-xl font-bold text-sm tracking-wide" onclick="openTopupLink()">
+                    立即充值
+                </button>
+            </div>
+            
+            <p class="text-center text-[11px] text-gray-500 px-4 flex items-center justify-center gap-1">
+                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                充值将自动处理。如有问题，请联系管理员。
+            </p>
+        </div>
+
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand(); 
+        tg.setHeaderColor('secondary_bg_color');
+
+        // === LOGIKA TAB ===
+        let liveInterval;
+        function showTab(tabName) {
+            document.getElementById('tab-live').classList.add('hidden');
+            document.getElementById('tab-topup').classList.add('hidden');
+            
+            const btnLive = document.getElementById('btn-live');
+            const btnTopup = document.getElementById('btn-topup');
+            btnLive.className = 'flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm transition-all duration-300 tab-inactive';
+            btnTopup.className = 'flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm transition-all duration-300 tab-inactive';
+
+            document.getElementById('tab-' + tabName).classList.remove('hidden');
+            document.getElementById('btn-' + tabName).className = 'flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm transition-all duration-300 tab-active';
+
+            if (tabName === 'live') startLiveFeed();
+            else clearInterval(liveInterval);
+        }
+
+        // === LIVE TRANSAKSI ===
+        function startLiveFeed() {
+            const listContainer = document.getElementById('live-list');
+            if (listContainer.children.length === 0) {
+                for(let i=0; i<4; i++) generateLiveTransaction(true);
+            }
+            clearInterval(liveInterval); 
+            // Muncul setiap 10 detik
+            liveInterval = setInterval(() => generateLiveTransaction(false), 10000); 
+        }
+
+        function generateLiveTransaction(isInitial = false) {
+            const listContainer = document.getElementById('live-list');
+            
+            const countries = [
+                { name: 'ZIMBABWE', flag: '🇿🇼' }, { name: 'JERMAN', flag: '🇩🇪' }, 
+                { name: 'AMERIKA SERIKAT', flag: '🇺🇸' }, { name: 'MAROKO', flag: '🇲🇦' },
+                { name: 'KONGO', flag: '🇨🇬' }, { name: 'UGANDA', flag: '🇺🇬' }
+            ];
+            
+            const maskLength = Math.floor(Math.random() * 12) + 4; 
+            const maskedUser = '*'.repeat(maskLength);
+
+            let randomQty;
+            if (Math.random() < 0.5) randomQty = 3;
+            else {
+                const otherQty = [4, 5, 6, 10];
+                randomQty = otherQty[Math.floor(Math.random() * otherQty.length)];
+            }
+
+            const txNumber = 'WILD-' + Math.floor(100000 + Math.random() * 900000);
+            const randomCountry = countries[Math.floor(Math.random() * countries.length)];
+            const total = (randomQty * 13.00).toFixed(2);
+
+            const now = new Date();
+            const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+
+            const item = document.createElement('div');
+            item.className = `glass-card p-4 rounded-2xl flex items-center justify-between ${!isInitial ? 'animate-live' : ''}`;
+            
+            item.innerHTML = `
+                <div class="flex items-center space-x-3.5">
+                    <div class="w-12 h-12 rounded-full bg-gray-700/50 text-gray-400 flex items-center justify-center border border-gray-600 shrink-0">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                    
+                    <div class="overflow-hidden">
+                        <div class="flex flex-wrap items-center gap-2 mb-1">
+                            <p class="text-base font-bold text-gray-200 tracking-widest">${maskedUser}</p>
+                            <span class="text-[10px] text-blue-400 bg-blue-400/10 px-2 py-0.5 rounded border border-blue-400/20 whitespace-nowrap">${txNumber}</span>
+                        </div>
+                        <p class="text-sm text-gray-400 flex items-center">
+                            <span class="mr-1.5 text-base">${randomCountry.flag}</span> ${randomCountry.name} 
+                            <span class="mx-2 text-gray-600">•</span> <span class="font-semibold text-gray-300">x${randomQty}</span>
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="text-right shrink-0 ml-3 flex flex-col items-end justify-center">
+                    <p class="text-green-400 font-bold text-base mb-1">+$${total}</p>
+                    <div class="flex items-center space-x-1.5">
+                        <span class="text-[11px] text-green-400 font-semibold bg-green-400/10 px-1.5 py-0.5 rounded flex items-center gap-1">
+                            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            成功
+                        </span>
+                        <p class="text-xs text-gray-500">${timeStr}</p>
+                    </div>
+                </div>
+            `;
+
+            listContainer.prepend(item);
+            if (listContainer.children.length > 8) {
+                listContainer.removeChild(listContainer.lastChild);
+            }
+        }
+
+        // Fungsi Topup
+        function openTopupLink() {
+            tg.openLink('https://wild.appwrite.network');
+        }
+        
+        // Jalankan live transaksi saat pertama kali dibuka
+        startLiveFeed();
+    </script>
+</body>
+</html>
