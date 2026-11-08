@@ -1,284 +1,384 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>狂野西部 - MetaOne</title>
-    <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts (Inter) -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --tg-bg: var(--tg-theme-bg-color, #0f172a);
-            --tg-card: var(--tg-theme-secondary-bg-color, #1e293b);
-            --tg-text: var(--tg-theme-text-color, #f8fafc);
-            --tg-hint: var(--tg-theme-hint-color, #94a3b8);
-            --tg-btn: var(--tg-theme-button-color, #3b82f6);
-            --tg-btn-text: var(--tg-theme-button-text-color, #ffffff);
+            --tg-bg: var(--tg-theme-bg-color, #09090b);
+            --tg-card: var(--tg-theme-secondary-bg-color, #18181b);
+            --tg-text: var(--tg-theme-text-color, #fafafa);
+            --tg-hint: var(--tg-theme-hint-color, #a1a1aa);
         }
         body {
             background-color: var(--tg-bg);
             color: var(--tg-text);
             font-family: 'Inter', -apple-system, sans-serif;
             -webkit-tap-highlight-color: transparent;
+            background-image: radial-gradient(circle at top right, rgba(59, 130, 246, 0.08), transparent 40%),
+                              radial-gradient(circle at bottom left, rgba(16, 185, 129, 0.05), transparent 40%);
         }
         .glass-card {
-            background: var(--tg-card);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.1);
+            background: rgba(24, 24, 27, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
         }
-        .btn-primary {
-            background: var(--tg-btn);
-            color: var(--tg-btn-text);
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-        }
-        .btn-primary:active {
-            transform: scale(0.97);
-            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
-        }
-        .tab-active {
-            background: var(--tg-card);
-            color: var(--tg-text);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            font-weight: 600;
-        }
-        .tab-inactive {
-            color: var(--tg-hint);
-            font-weight: 500;
-        }
+        .glow-text { text-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
+        
         @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-15px) scale(0.98); }
+            from { opacity: 0; transform: translateY(-20px) scale(0.95); }
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
-        .animate-live {
-            animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
+        .animate-live { animation: slideDown 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         ::-webkit-scrollbar { display: none; }
         
-        .svg-icon {
-            width: 1.25rem;
-            height: 1.25rem;
-            display: inline-block;
-            vertical-align: middle;
-            fill: none;
-            stroke: currentColor;
-            stroke-width: 2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
+        .btn-lang {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            transition: all 0.2s;
+        }
+        .btn-lang:active { transform: scale(0.95); background: rgba(59, 130, 246, 0.2); }
+        
+        .best-seller-card {
+            background: linear-gradient(145deg, rgba(39, 39, 42, 0.9), rgba(24, 24, 27, 0.9));
+            border: 1px solid rgba(234, 88, 12, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        .best-seller-card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(234, 88, 12, 0.8), transparent);
         }
     </style>
 </head>
-<body class="p-4 pb-24 min-h-screen">
+<body class="p-4 pb-10 min-h-screen">
 
-    <!-- Container Utama -->
-    <div class="max-w-md mx-auto space-y-5">
+    <div class="max-w-md mx-auto space-y-6">
 
-        <!-- 1. HEADER: Profil Toko & Saldo -->
-        <div class="glass-card rounded-2xl p-5 flex justify-between items-center relative overflow-hidden">
-            <div class="absolute -top-10 -right-10 w-32 h-32 bg-green-500/10 rounded-full blur-2xl"></div>
+        <!-- 1. HEADER -->
+        <div class="glass-card rounded-[24px] p-5 relative overflow-hidden">
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl"></div>
+            <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-green-500/10 rounded-full blur-3xl"></div>
             
-            <div class="flex items-center space-x-3 z-10">
-                <div class="w-11 h-11 rounded-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center border border-gray-600 shadow-inner text-blue-400">
-                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                        <line x1="3" y1="6" x2="21" y2="6"></line>
-                        <path d="M16 10a4 4 0 0 1-8 0"></path>
-                    </svg>
+            <div class="flex justify-between items-start relative z-10">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gray-800 flex items-center justify-center border border-gray-700 shadow-inner">
+                        <svg class="w-5 h-5 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <path d="M16 10a4 4 0 0 1-8 0"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-[10px] text-gray-400 font-semibold tracking-widest uppercase mb-0.5" id="store-title">Official Store</p>
+                        <p class="text-sm font-bold text-white tracking-wide">狂野西部 - MetaOne</p>
+                    </div>
                 </div>
-                <div>
-                    <p class="text-[10px] text-gray-400 font-medium tracking-wider uppercase mb-0.5">官方商店</p>
-                    <p class="text-sm font-bold text-white leading-tight">狂野西部 - MetaOne</p>
-                </div>
+
+                <button onclick="toggleLang()" class="btn-lang px-3 py-1.5 rounded-lg flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    <span class="text-[10px] font-bold text-blue-400 tracking-wider" id="lang-label">CN</span>
+                </button>
             </div>
-            
-            <div class="text-right z-10">
-                <p class="text-[11px] text-gray-400 font-medium tracking-wider uppercase mb-0.5">余额</p>
-                <!-- SALDO DIUBAH MENJADI $0.00 -->
-                <p class="text-2xl font-bold text-green-400 tracking-tight" id="balance">$0.00</p>
-                <p class="text-[10px] text-green-500/70 font-semibold">USDT</p>
+
+            <div class="mt-6 relative z-10">
+                <p class="text-xs text-gray-400 font-medium mb-1" id="balance-title">Saldo Tersedia</p>
+                <div class="flex items-baseline space-x-1">
+                    <span class="text-2xl font-bold text-green-400 glow-text">$</span>
+                    <h1 class="text-3xl font-extrabold text-green-400 glow-text tracking-tight" id="balance-amount">0.00</h1>
+                    <span class="text-sm font-semibold text-green-500/70 ml-1">USDT</span>
+                </div>
             </div>
         </div>
 
-        <!-- 2. NAVIGASI TAB -->
-        <div class="bg-black/20 p-1.5 rounded-xl flex space-x-1 border border-white/5">
-            <button id="btn-live" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm transition-all duration-300 tab-active" onclick="showTab('live')">
-                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-                实时动态
-            </button>
-            <button id="btn-topup" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm transition-all duration-300 tab-inactive" onclick="showTab('topup')">
-                <svg class="svg-icon" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
-                充值
-            </button>
+        <!-- 2. PRODUK TERLARIS (BEST SELLER) -->
+        <div class="space-y-3">
+            <div class="flex items-center justify-between px-1">
+                <h2 class="text-sm font-bold text-gray-200" id="best-seller-title">Produk Terlaris</h2>
+                <span class="text-[10px] font-bold text-orange-400 bg-orange-400/10 px-2 py-0.5 rounded border border-orange-400/20 uppercase tracking-wider flex items-center gap-1">
+                    <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+                    HOT
+                </span>
+            </div>
+            
+            <div id="best-seller-list" class="grid grid-cols-2 gap-3"></div>
         </div>
 
-        <!-- 3. KONTEN: LIVE TRANSAKSI -->
-        <div id="tab-live" class="space-y-3">
-            <div class="flex items-center justify-between px-1 mb-2">
-                <h2 class="text-sm font-semibold text-gray-300">最近购买记录 (实时)</h2>
-                <span class="flex items-center text-xs text-green-400 font-medium">
+        <!-- 3. LIVE TRANSAKSI -->
+        <div class="space-y-3 pt-2">
+            <div class="flex items-center justify-between px-1">
+                <h2 class="text-sm font-bold text-gray-200" id="live-title">Live Transaksi</h2>
+                <div class="flex items-center bg-green-500/10 px-2.5 py-1 rounded-full border border-green-500/20">
                     <span class="relative flex h-2 w-2 mr-2">
                       <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                       <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                     </span>
-                    在线
-                </span>
+                    <span class="text-[10px] text-green-400 font-bold uppercase tracking-wider" id="online-text">Online</span>
+                </div>
             </div>
             
-            <div id="live-list" class="space-y-3.5">
-                <!-- Data live akan muncul di sini -->
-            </div>
+            <div id="live-list" class="space-y-3"></div>
         </div>
-
-        <!-- 4. KONTEN: TOPUP -->
-        <div id="tab-topup" class="hidden space-y-4 animate-live">
-            <div class="glass-card rounded-2xl p-6 text-center relative overflow-hidden">
-                <div class="w-16 h-16 mx-auto bg-blue-500/10 rounded-full flex items-center justify-center mb-4 border border-blue-500/20 text-blue-400">
-                    <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
-                </div>
-                
-                <h2 class="text-lg font-bold text-white mb-1">充值 USDT</h2>
-                <p class="text-xs text-gray-400 mb-6">为您的账户余额充值</p>
-                
-                <div class="bg-black/20 rounded-xl p-4 mb-6 border border-white/5 flex justify-between items-center">
-                    <div class="text-left">
-                        <p class="text-[10px] text-gray-400 uppercase tracking-wider">最低充值</p>
-                        <p class="text-lg font-bold text-white">$10.00</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-[10px] text-gray-400 uppercase tracking-wider">网络</p>
-                        <div class="flex space-x-1 mt-1">
-                            <span class="bg-gray-700 text-gray-300 text-[10px] px-2 py-0.5 rounded">TRC20</span>
-                            <span class="bg-gray-700 text-gray-300 text-[10px] px-2 py-0.5 rounded">BEP20</span>
-                        </div>
-                    </div>
-                </div>
-
-                <button class="btn-primary w-full py-3.5 rounded-xl font-bold text-sm tracking-wide" onclick="openTopupLink()">
-                    立即充值
-                </button>
-            </div>
-            
-            <p class="text-center text-[11px] text-gray-500 px-4 flex items-center justify-center gap-1">
-                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                充值将自动处理。如有问题，请联系管理员。
-            </p>
-        </div>
-
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand(); 
-        tg.setHeaderColor('secondary_bg_color');
+        tg.ready(); tg.expand(); tg.setHeaderColor('secondary_bg_color');
 
-        // === LOGIKA TAB ===
-        let liveInterval;
-        function showTab(tabName) {
-            document.getElementById('tab-live').classList.add('hidden');
-            document.getElementById('tab-topup').classList.add('hidden');
-            
-            const btnLive = document.getElementById('btn-live');
-            const btnTopup = document.getElementById('btn-topup');
-            btnLive.className = 'flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm transition-all duration-300 tab-inactive';
-            btnTopup.className = 'flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm transition-all duration-300 tab-inactive';
+        let currentLang = 'id';
+        let liveInterval; 
+        let liveTransactions = []; 
 
-            document.getElementById('tab-' + tabName).classList.remove('hidden');
-            document.getElementById('btn-' + tabName).className = 'flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm transition-all duration-300 tab-active';
+        const EXCHANGE_RATE = 18049;
+        const formatIDR = (angka) => new Intl.NumberFormat('id-ID').format(angka);
 
-            if (tabName === 'live') startLiveFeed();
-            else clearInterval(liveInterval);
-        }
-
-        // === LIVE TRANSAKSI ===
-        function startLiveFeed() {
-            const listContainer = document.getElementById('live-list');
-            if (listContainer.children.length === 0) {
-                for(let i=0; i<4; i++) generateLiveTransaction(true);
+        const t = {
+            id: {
+                store: "Official Store",
+                balance: "Saldo Tersedia",
+                lang_btn: "CN",
+                best_seller_title: "Produk Terlaris",
+                live_title: "Live Transaksi",
+                online: "Online",
+                status: "Berhasil",
+                buy: "Beli",
+                available: "Tersedia",
+                action_topup: "Mengisi Saldo",
+                action_buy: "Membeli Produk"
+            },
+            zh: {
+                store: "官方商店",
+                balance: "可用余额",
+                lang_btn: "ID",
+                best_seller_title: "热销产品",
+                live_title: "实时购买动态",
+                online: "在线",
+                status: "成功",
+                buy: "购买",
+                available: "有货",
+                action_topup: "充值余额",
+                action_buy: "购买产品"
             }
-            clearInterval(liveInterval); 
-            // Muncul setiap 10 detik
-            liveInterval = setInterval(() => generateLiveTransaction(false), 10000); 
+        };
+
+        const dummyProducts = [
+            { 
+                id: "metaone",
+                name_id: "Meta One Account", 
+                name_zh: "Meta One 账号", 
+                price: 13.00, 
+                icon_svg: `<svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 17l3-9 5 5 2-7 2 7 5-5 3 9H2z"/></svg>`,
+                color: "text-yellow-400 bg-yellow-400/10",
+                border_color: "border-yellow-400/30"
+            },
+            { 
+                id: "otpemail",
+                name_id: "OTP Email (Meta Verified)", 
+                name_zh: "OTP 邮箱 (Meta)", 
+                price: 5.50, 
+                icon_svg: `<svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 6l-10 7L2 6"/></svg>`,
+                color: "text-blue-400 bg-blue-400/10",
+                border_color: "border-blue-400/30"
+            }
+        ];
+
+        // === FUNGSI MENGHASILKAN NOMINAL TOPUP ACAK (10 - 598) ===
+        // Pangkat 3.0 membuat nominal rendah ($10 - $50) sangat dominan muncul
+        function getRandomTopupAmount() {
+            let r = Math.pow(Math.random(), 3.0); 
+            let amount = 10 + (r * (598 - 10)); 
+            return Math.round(amount); 
         }
 
-        function generateLiveTransaction(isInitial = false) {
+        function renderBestSellers() {
+            const container = document.getElementById('best-seller-list');
+            container.innerHTML = '';
+            const lang = t[currentLang];
+
+            dummyProducts.forEach(prod => {
+                const priceIDR = formatIDR(prod.price * EXCHANGE_RATE);
+                const productName = currentLang === 'id' ? prod.name_id : prod.name_zh;
+                
+                const card = document.createElement('div');
+                card.className = `best-seller-card rounded-2xl p-4 flex flex-col justify-between h-full cursor-pointer active:scale-95 transition-transform`;
+                
+                card.innerHTML = `
+                    <div>
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-3 ${prod.color}">
+                            ${prod.icon_svg}
+                        </div>
+                        <h3 class="text-[11px] font-bold text-gray-200 leading-tight mb-1">${productName}</h3>
+                        <p class="text-[10px] text-gray-400 mb-3">Rp ${priceIDR}</p>
+                    </div>
+                    
+                    <div class="flex items-center justify-between mt-auto pt-2 border-t border-white/5">
+                        <div class="flex flex-col">
+                            <span class="text-xs font-bold text-green-400">$${prod.price.toFixed(2)}</span>
+                            <span class="text-[9px] text-green-500 flex items-center gap-1 mt-1 font-medium">
+                                <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                                ${lang.available}
+                            </span>
+                        </div>
+                        <span class="text-[9px] font-bold bg-gray-800 text-gray-300 px-2.5 py-1.5 rounded-md border border-gray-700 h-fit">${lang.buy}</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function renderLiveTransactions() {
             const listContainer = document.getElementById('live-list');
+            listContainer.innerHTML = '';
+            const lang = t[currentLang];
+
+            liveTransactions.forEach((tx, index) => {
+                const item = document.createElement('div');
+                item.className = `glass-card p-3.5 rounded-2xl flex items-center justify-between ${index === 0 ? 'animate-live' : ''}`;
+                
+                if (tx.type === 'topup') {
+                    item.innerHTML = `
+                        <div class="flex items-center space-x-3.5">
+                            <div class="w-10 h-10 rounded-xl flex items-center justify-center border text-green-400 bg-green-400/10 border-green-400/30 shrink-0">
+                                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/><path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z"/></svg>
+                            </div>
+                            
+                            <div>
+                                <div class="flex items-center gap-2 mb-0.5">
+                                    <p class="text-[13px] font-bold text-gray-200 tracking-widest">${tx.maskedUser}</p>
+                                    <span class="text-[9px] font-semibold text-gray-400 bg-gray-800 px-1.5 py-0.5 rounded border border-gray-700">${tx.txNumber}</span>
+                                </div>
+                                <p class="text-xs text-gray-400">${lang.action_topup}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="text-right shrink-0 ml-2">
+                            <p class="text-sm font-bold text-green-400 mb-1">+$${tx.amount}</p>
+                            <div class="flex items-center justify-end space-x-1.5">
+                                <span class="text-[9px] font-bold text-green-400 bg-green-400/10 px-1.5 py-0.5 rounded flex items-center gap-1">
+                                    <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>${lang.status}
+                                </span>
+                                <p class="text-[10px] text-gray-500 font-medium">${tx.timeStr}</p>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    const productName = currentLang === 'id' ? tx.product.name_id : tx.product.name_zh;
+                    item.innerHTML = `
+                        <div class="flex items-center space-x-3.5">
+                            <div class="w-10 h-10 rounded-xl flex items-center justify-center border ${tx.product.color} ${tx.product.border_color} shrink-0">
+                                ${tx.product.icon_svg}
+                            </div>
+                            
+                            <div>
+                                <div class="flex items-center gap-2 mb-0.5">
+                                    <p class="text-[13px] font-bold text-gray-200 tracking-widest">${tx.maskedUser}</p>
+                                    <span class="text-[9px] font-semibold text-gray-400 bg-gray-800 px-1.5 py-0.5 rounded border border-gray-700">${tx.txNumber}</span>
+                                </div>
+                                <p class="text-xs text-gray-400">
+                                    ${productName} <span class="mx-1 text-gray-600">|</span> <span class="text-gray-300 font-semibold">x${tx.qty}</span>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="text-right shrink-0 ml-2">
+                            <p class="text-sm font-bold text-green-400 mb-1">+$${tx.total}</p>
+                            <div class="flex items-center justify-end space-x-1.5">
+                                <span class="text-[9px] font-bold text-green-400 bg-green-400/10 px-1.5 py-0.5 rounded flex items-center gap-1">
+                                    <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>${lang.status}
+                                </span>
+                                <p class="text-[10px] text-gray-500 font-medium">${tx.timeStr}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+                listContainer.appendChild(item);
+            });
+        }
+
+        function applyLanguage() {
+            const lang = t[currentLang];
+            document.getElementById('store-title').innerText = lang.store;
+            document.getElementById('balance-title').innerText = lang.balance;
+            document.getElementById('lang-label').innerText = lang.lang_btn;
+            document.getElementById('best-seller-title').innerText = lang.best_seller_title;
+            document.getElementById('live-title').innerText = lang.live_title;
+            document.getElementById('online-text').innerText = lang.online;
             
-            const countries = [
-                { name: 'ZIMBABWE', flag: '🇿🇼' }, { name: 'JERMAN', flag: '🇩🇪' }, 
-                { name: 'AMERIKA SERIKAT', flag: '🇺🇸' }, { name: 'MAROKO', flag: '🇲🇦' },
-                { name: 'KONGO', flag: '🇨🇬' }, { name: 'UGANDA', flag: '🇺🇬' }
-            ];
-            
+            renderBestSellers(); 
+            renderLiveTransactions(); 
+        }
+
+        function toggleLang() {
+            currentLang = currentLang === 'id' ? 'zh' : 'id';
+            applyLanguage();
+        }
+
+        function createNewTransaction() {
             const maskLength = Math.floor(Math.random() * 12) + 4; 
             const maskedUser = '*'.repeat(maskLength);
-
-            let randomQty;
-            if (Math.random() < 0.5) randomQty = 3;
-            else {
-                const otherQty = [4, 5, 6, 10];
-                randomQty = otherQty[Math.floor(Math.random() * otherQty.length)];
-            }
-
             const txNumber = 'WILD-' + Math.floor(100000 + Math.random() * 900000);
-            const randomCountry = countries[Math.floor(Math.random() * countries.length)];
-            const total = (randomQty * 13.00).toFixed(2);
-
+            
             const now = new Date();
             const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
 
-            const item = document.createElement('div');
-            item.className = `glass-card p-4 rounded-2xl flex items-center justify-between ${!isInitial ? 'animate-live' : ''}`;
-            
-            item.innerHTML = `
-                <div class="flex items-center space-x-3.5">
-                    <div class="w-12 h-12 rounded-full bg-gray-700/50 text-gray-400 flex items-center justify-center border border-gray-600 shrink-0">
-                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                        </svg>
-                    </div>
-                    
-                    <div class="overflow-hidden">
-                        <div class="flex flex-wrap items-center gap-2 mb-1">
-                            <p class="text-base font-bold text-gray-200 tracking-widest">${maskedUser}</p>
-                            <span class="text-[10px] text-blue-400 bg-blue-400/10 px-2 py-0.5 rounded border border-blue-400/20 whitespace-nowrap">${txNumber}</span>
-                        </div>
-                        <p class="text-sm text-gray-400 flex items-center">
-                            <span class="mr-1.5 text-base">${randomCountry.flag}</span> ${randomCountry.name} 
-                            <span class="mx-2 text-gray-600">•</span> <span class="font-semibold text-gray-300">x${randomQty}</span>
-                        </p>
-                    </div>
-                </div>
+            // === PROBABILITAS DIUBAH MENJADI 25% (0.25) ===
+            // 25% untuk Isi Saldo, 75% untuk Beli Produk
+            const isTopup = Math.random() < 0.25;
+
+            let newTx = {};
+
+            if (isTopup) {
+                newTx = {
+                    type: 'topup',
+                    maskedUser: maskedUser,
+                    amount: getRandomTopupAmount().toFixed(2),
+                    txNumber: txNumber,
+                    timeStr: timeStr
+                };
+            } else {
+                const randomProduct = dummyProducts[Math.floor(Math.random() * dummyProducts.length)];
+                const qty = Math.floor(Math.random() * 5) + 1; 
+                const total = (qty * randomProduct.price).toFixed(2);
                 
-                <div class="text-right shrink-0 ml-3 flex flex-col items-end justify-center">
-                    <p class="text-green-400 font-bold text-base mb-1">+$${total}</p>
-                    <div class="flex items-center space-x-1.5">
-                        <span class="text-[11px] text-green-400 font-semibold bg-green-400/10 px-1.5 py-0.5 rounded flex items-center gap-1">
-                            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                            成功
-                        </span>
-                        <p class="text-xs text-gray-500">${timeStr}</p>
-                    </div>
-                </div>
-            `;
-
-            listContainer.prepend(item);
-            if (listContainer.children.length > 8) {
-                listContainer.removeChild(listContainer.lastChild);
+                newTx = {
+                    type: 'purchase',
+                    maskedUser: maskedUser,
+                    product: randomProduct,
+                    qty: qty,
+                    total: total,
+                    txNumber: txNumber,
+                    timeStr: timeStr
+                };
             }
+
+            liveTransactions.unshift(newTx);
+
+            if (liveTransactions.length > 15) {
+                liveTransactions.pop(); 
+            }
+
+            renderLiveTransactions();
         }
 
-        // Fungsi Topup
-        function openTopupLink() {
-            tg.openLink('https://wild.appwrite.network');
+        function startLiveFeed() {
+            if (liveTransactions.length === 0) {
+                for(let i=0; i<4; i++) createNewTransaction();
+            }
+            clearInterval(liveInterval); 
+            liveInterval = setInterval(() => createNewTransaction(), 10000); 
         }
-        
-        // Jalankan live transaksi saat pertama kali dibuka
+
+        // Inisialisasi Awal
+        applyLanguage();
         startLiveFeed();
     </script>
 </body>
